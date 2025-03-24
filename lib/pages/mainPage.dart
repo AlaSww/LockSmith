@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class Mainpage extends StatelessWidget {
+class Mainpage extends StatefulWidget {
   final Widget mobile;
   final Widget desktop;
   const Mainpage({super.key, required this.mobile,required this.desktop});
 
+  @override
+  State<Mainpage> createState() => _MainpageState();
+}
+
+class _MainpageState extends State<Mainpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,10 +18,10 @@ class Mainpage extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context,Constraints){
           if(Constraints.maxWidth<1000){
-            return mobile;
+            return widget.mobile;
           }
           else{
-            return desktop;
+            return widget.desktop;
           }
         }
         )
