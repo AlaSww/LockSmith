@@ -4,10 +4,13 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:peg/pages/desktop%20Pages/dmain.dart';
 import 'package:peg/pages/mainPage.dart';
 import 'package:peg/pages/mobile%20Pages/main.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future main() async {
   await Hive.initFlutter();
   var box=Hive.openBox('locksmith');
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
   runApp(MyApp());
 }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:peg/sql/sqldb.dart';
 import 'package:peg/util.dart';
 
 class Home extends StatefulWidget {
@@ -7,11 +9,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  Sqldb sqldb=Sqldb();
+  bool isvisible=false;
+  List passwords= [];
+  void getpasswords() async{
+    int k=await sqldb.insertData("INSERT INTO passwords (`platform`,'username','original','encryption') VALUES ('github','ala','ala','fddsfga')");
+    List<Map> response= await sqldb.readData("select * from passwords");
+    print(response);
+    passwords.addAll(response);
+  }
+  @override
+  void initState() {
+    getpasswords();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final screenwidth=MediaQuery.of(context).size.width;
     final screenheight=MediaQuery.of(context).size.height;
-    bool isvisible=false;
     return Scaffold(
       backgroundColor: bgcolor,
       appBar: AppBar(
@@ -84,7 +99,7 @@ class _HomeState extends State<Home> {
 
             Expanded(
               child: ListView.builder(
-                itemCount: 5,
+                itemCount:passwords.length,
                 itemBuilder: (context, index) {
                   return Card(
                     elevation: 2,
@@ -92,20 +107,37 @@ class _HomeState extends State<Home> {
                     child: ListTile(
                       tileColor: gray,
                       leading: Icon(Icons.security,color: purple,), 
-                      title: Text("Website/App Name",style: TextStyle(color: Colors.white)),
-                      subtitle: Text("Username",style: TextStyle(color: Colors.white)),
+                      title: !isvisible 
+                      ?Text("Platform: ${passwords[index]['platform']}",style: TextStyle(color: Colors.white))
+                      :Text("Password: ${passwords[index]['original']}",style: TextStyle(color: Colors.white)),
+                      subtitle: Text("User:${passwords[index]['username']}",style: TextStyle(color: Colors.white)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: isvisible==false ?Icon(Icons.visibility,color: const Color.fromARGB(255, 218, 218, 218),):Icon(Icons.visibility_off,color: const Color.fromARGB(255, 202, 202, 202),),
+                            icon: !isvisible ?Icon(Icons.visibility,color: const Color.fromARGB(255, 218, 218, 218),):Icon(Icons.visibility_off,color: const Color.fromARGB(255, 202, 202, 202),),
                             onPressed: () {
-                              
+                              setState(() {
+                                isvisible=!isvisible;
+                                print(isvisible);
+                              });
                             }, 
                           ),
                           IconButton(
                             icon: Icon(Icons.copy,color: const Color.fromARGB(255, 218, 218, 218)),
                             onPressed: () {},
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete,color: const Color.fromARGB(255, 255, 0, 0)),
+                            onPressed: () async{
+                              int response=await sqldb.deleteData("delete from passwords where id=${passwords[index]['id']}");
+                              if(response>0){
+                                passwords.removeWhere((item)=> item['id'] == passwords[index]['id']);
+                                setState(() {
+                                  
+                                });
+                              }
+                            },
                           ),
                         ],
                       ),
