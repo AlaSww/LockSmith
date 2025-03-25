@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:peg/sql/sqldb.dart';
 import 'package:peg/util.dart';
@@ -125,7 +126,13 @@ class _HomeState extends State<Home> {
                           ),
                           IconButton(
                             icon: Icon(Icons.copy,color: const Color.fromARGB(255, 218, 218, 218)),
-                            onPressed: () {},
+                            onPressed: () async{
+                              await Clipboard.setData(ClipboardData(text: passwords[index]['encryption']));
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                content: Text('Copied to clipboard'),
+                              ));
+                            },
                           ),
                           IconButton(
                             icon: Icon(Icons.delete,color: const Color.fromARGB(255, 255, 0, 0)),
