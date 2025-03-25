@@ -15,25 +15,28 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  bool isBoxReady = false;
+
   @override
+  void initState() {
+    super.initState();
+    openHiveBox();
+  }
+
+  Future<void> openHiveBox() async {
+    await Hive.openBox('locksmith');
+    setState(() {
+      isBoxReady = true; // Update state only once
+    });
+  }
   Widget build(BuildContext context) {
     final screenwidth=MediaQuery.of(context).size.width;
     final screenheight=MediaQuery.of(context).size.height;
-    return FutureBuilder(
-      future: openHiveBox(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(color: Colors.white,); 
-        } else if (snapshot.hasError) {
-          return Text("Error opening Hive box");
-        }
-        return Scaffold(
+    return  Scaffold(
           backgroundColor: bgcolor,
         body: Center(
           child: Hive.box('locksmith').containsKey('key') ?Login():Firstuse(),
         ),
         );
-      },
-    );
   }
 }
