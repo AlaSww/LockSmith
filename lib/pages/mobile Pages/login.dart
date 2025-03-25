@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:peg/pages/mobile%20Pages/home.dart';
+import 'package:peg/pages/home.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -43,6 +43,7 @@ class _LoginState extends State<Login> {
                   Container(
                     width: screenwidth*0.7,
                     child: TextField(
+                      obscureText: true,
                       controller: key,
                       style: TextStyle(
                         color: Colors.white,

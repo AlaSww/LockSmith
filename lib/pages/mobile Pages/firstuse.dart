@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:peg/pages/mobile%20Pages/home.dart';
+import 'package:peg/pages/home.dart';
 
 class Firstuse extends StatelessWidget {
   const Firstuse({super.key});
@@ -38,6 +38,7 @@ class Firstuse extends StatelessWidget {
                   Container(
                     width: screenwidth*0.7,
                     child: TextField(
+                      obscureText: true,
                       controller: key,
                       style: TextStyle(
                         color: Colors.white,
@@ -65,6 +66,7 @@ class Firstuse extends StatelessWidget {
                   Container(
                     width: screenwidth*0.7,
                     child: TextField(
+                      obscureText: true,
                       controller: verification,
                       style: TextStyle(
                         color: Colors.white,

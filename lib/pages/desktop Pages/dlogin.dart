@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:peg/pages/mobile%20Pages/home.dart';
+import 'package:peg/pages/home.dart';
 
 class Dlogin extends StatelessWidget {
   const Dlogin({super.key});
@@ -38,6 +38,7 @@ class Dlogin extends StatelessWidget {
                   Container(
                     width: screenwidth*0.25,
                     child: TextField(
+                      obscureText: true,
                       controller: key,
                       style: TextStyle(
                         color: Colors.white,
