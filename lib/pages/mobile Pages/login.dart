@@ -18,8 +18,10 @@ class _LoginState extends State<Login> {
     final screenheight=MediaQuery.of(context).size.height;
     TextEditingController key = TextEditingController();
     return Container(
-              height: screenheight*0.4,
               width: screenwidth*0.8,
+              constraints: BoxConstraints(
+                maxHeight: screenheight * 0.5, 
+              ),
               padding: EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                 boxShadow: [BoxShadow(color:const Color.fromARGB(255, 241, 130, 241), blurRadius: 20, spreadRadius: 5)],

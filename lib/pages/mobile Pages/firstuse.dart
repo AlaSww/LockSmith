@@ -13,7 +13,9 @@ class Firstuse extends StatelessWidget {
     TextEditingController key = TextEditingController();
     TextEditingController verification = TextEditingController();
     return Container(
-              height: screenheight*0.45,
+              constraints: BoxConstraints(
+                maxHeight: screenheight * 0.5, 
+              ),
               width: screenwidth*0.8,
               padding: EdgeInsets.only(top: 20),
               decoration: BoxDecoration(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:peg/pages/mobile%20Pages/addpage.dart';
+import 'package:peg/pages/addpage.dart';
 import 'package:peg/password.dart';
 import 'package:peg/sql/sqldb.dart';
 import 'package:peg/util.dart';
@@ -15,6 +15,7 @@ class _HomeState extends State<Home> {
   Sqldb sqldb=Sqldb();
   bool isvisible=false;
   List passwords= [];
+  List foundpasswords=[];
   void getpasswords() async{
     List<Map> response= await sqldb.readData("select * from passwords");
     print(response);
@@ -25,9 +26,22 @@ class _HomeState extends State<Home> {
       });
     }
   }
+  void search(String entered){
+    List result=[];
+    if(entered.isEmpty){
+      result=passwords;
+    }
+    else{
+      result=passwords.where((platform)=>platform["platform"].toString().toLowerCase().contains(entered.toLowerCase())).toList();
+    }
+    setState(() {
+      foundpasswords=result;
+    });
+  }
   @override
   void initState() {
     getpasswords();
+    foundpasswords=passwords;
     super.initState();
   }
   @override
@@ -142,6 +156,7 @@ class _HomeState extends State<Home> {
 
             // 🔍 Search Bar
             TextField(
+              onChanged: (value)=>search(value),
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "Search passwords...",
@@ -163,7 +178,7 @@ class _HomeState extends State<Home> {
 
             Expanded(
               child: ListView.builder(
-                itemCount:passwords.length,
+                itemCount:foundpasswords.length,
                 itemBuilder: (context, index) {
                   return Card(
                     elevation: 2,
@@ -172,9 +187,9 @@ class _HomeState extends State<Home> {
                       tileColor: gray,
                       leading: Icon(Icons.security,color: purple,), 
                       title: !isvisible 
-                      ?Text("Platform: ${passwords[index]['platform']}",style: TextStyle(color: Colors.white))
-                      :Text("Password: ${passwords[index]['original']}",style: TextStyle(color: Colors.white)),
-                      subtitle: Text("User:${passwords[index]['username']}",style: TextStyle(color: Colors.white)),
+                      ?Text("Platform: ${foundpasswords[index]['platform']}",style: TextStyle(color: Colors.white))
+                      :Text("Password: ${foundpasswords[index]['original']}",style: TextStyle(color: Colors.white)),
+                      subtitle: Text("User:${foundpasswords[index]['username']}",style: TextStyle(color: Colors.white)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -190,7 +205,7 @@ class _HomeState extends State<Home> {
                           IconButton(
                             icon: Icon(Icons.copy,color: const Color.fromARGB(255, 218, 218, 218)),
                             onPressed: () async{
-                              await Clipboard.setData(ClipboardData(text: passwords[index]['encryption']));
+                              await Clipboard.setData(ClipboardData(text: foundpasswords[index]['original']));
                               if (!mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                 content: Text('Copied to clipboard'),
@@ -200,11 +215,12 @@ class _HomeState extends State<Home> {
                           IconButton(
                             icon: Icon(Icons.delete,color: const Color.fromARGB(255, 255, 0, 0)),
                             onPressed: () async{
-                              int response=await sqldb.deleteData("delete from passwords where id=${passwords[index]['id']}");
+                              int response=await sqldb.deleteData("delete from passwords where id=${foundpasswords[index]['id']}");
                               if(response>0){
-                                passwords.removeWhere((item)=> item['id'] == passwords[index]['id']);
+                                passwords.removeWhere((item)=> item['id'] == foundpasswords[index]['id']);
+                                print("After deletion: ${passwords.length}");
+                                foundpasswords.removeWhere((item)=> item['id'] == foundpasswords[index]['id']);
                                 setState(() {
-                                  
                                 });
                               }
                             },

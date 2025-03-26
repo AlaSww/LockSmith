@@ -14,9 +14,15 @@ class Addpage extends StatefulWidget {
 }
 
 class _AddpageState extends State<Addpage> {
-  Password pass=Password();
+  TextEditingController _platformController = TextEditingController();
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  Password pass= Password();
   Sqldb sqldb=Sqldb();
   void save() async{
+    _passwordController.text.isNotEmpty ?pass.password=_passwordController.text:DoNothingAction();
+    _platformController.text.isNotEmpty ?pass.platform=_platformController.text:DoNothingAction();
+    pass.username=_usernameController.text;
     pass.encrypt();
     int response=await sqldb.insertData('''
       INSERT INTO passwords('platform','username','original','encryption') VALUES 
@@ -62,9 +68,6 @@ class _AddpageState extends State<Addpage> {
   }
   @override
   Widget build(BuildContext context) {
-    final _platformController = TextEditingController();
-    final _usernameController = TextEditingController();
-    final _passwordController = TextEditingController();
     return Scaffold(
       backgroundColor: bgcolor,
       appBar: AppBar(title: Center(child: Text("Add Credential",style: TextStyle(color: Colors.white),)),backgroundColor:gray,),

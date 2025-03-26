@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -10,7 +12,9 @@ Future main() async {
   await Hive.initFlutter();
   var box=Hive.openBox('locksmith');
   sqfliteFfiInit();
+  if(Platform.isLinux){
   databaseFactory = databaseFactoryFfi;
+  }
   runApp(MyApp());
 }
 
