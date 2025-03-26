@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:peg/pages/mobile%20Pages/addpage.dart';
+import 'package:peg/password.dart';
 import 'package:peg/sql/sqldb.dart';
 import 'package:peg/util.dart';
 
@@ -14,10 +16,14 @@ class _HomeState extends State<Home> {
   bool isvisible=false;
   List passwords= [];
   void getpasswords() async{
-    int k=await sqldb.insertData("INSERT INTO passwords (`platform`,'username','original','encryption') VALUES ('github','ala','ala','fddsfga')");
     List<Map> response= await sqldb.readData("select * from passwords");
     print(response);
     passwords.addAll(response);
+    if(mounted){
+      setState(() {
+        
+      });
+    }
   }
   @override
   void initState() {
@@ -28,6 +34,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final screenwidth=MediaQuery.of(context).size.width;
     final screenheight=MediaQuery.of(context).size.height;
+    TextEditingController pass=TextEditingController();
     return Scaffold(
       backgroundColor: bgcolor,
       appBar: AppBar(
@@ -58,7 +65,63 @@ class _HomeState extends State<Home> {
                     ),
                     icon: Icon(Icons.lock,color: purple,),
                     label: Text("Generate Password",style: TextStyle(color: Colors.white)),
-                    onPressed: () {}, 
+                    onPressed: () {
+                      showDialog(
+                          context: context, 
+                          builder:(context){
+                            return AlertDialog(
+                              backgroundColor: const Color.fromARGB(255, 58, 58, 58),
+                              title: Center(
+                                child:TextField(
+                                    controller: pass,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter your short password. . .',
+                                      hintStyle: TextStyle(
+                                        color: const Color.fromARGB(255, 150, 150, 150)
+                                      ),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide(
+                                          color: const Color.fromARGB(255, 150, 0, 150),
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              actions: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 150, 0, 150),
+                                    borderRadius: BorderRadius.circular(20)
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () async{
+                                      Password p=Password();
+                                      p.password=pass.text;
+                                      p.encrypt();
+                                      await Clipboard.setData(ClipboardData(text:p.secure));
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                        content: Text('Copied to clipboard'),
+                                      ));
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Generate',style: TextStyle(color: Colors.white),),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          );
+                    }, 
                   ),
                 ),
                 SizedBox(
@@ -70,7 +133,7 @@ class _HomeState extends State<Home> {
                     ),
                     icon: Icon(Icons.add,color: purple,),
                     label: Text("Add Password",style: TextStyle(color: Colors.white)),
-                    onPressed: () {}, 
+                    onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => Addpage()));}, 
                   ),
                 ),
               ],
@@ -161,7 +224,9 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: purple,
         child: Icon(Icons.add,color:const Color.fromARGB(255, 218, 218, 218),size: 40,),
-        onPressed: () {}, 
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Addpage()));
+        }, 
       ),
     );
   }
